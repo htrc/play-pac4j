@@ -28,6 +28,7 @@ import org.pac4j.play.Constants;
 import org.pac4j.play.StorageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.Play;
 
 /**
  * This controller is the Java controller to retrieve the user profile or the redirection url to start the authentication process.
@@ -73,7 +74,7 @@ public class JavaController extends CallbackController {
             throw new TechnicalException("No client defined. Use Config.setClients(clients)");
         }
         // redirect to the provider for authentication
-        JavaWebContext webContext = new JavaWebContext(request(), response(), session());
+        JavaWebContext webContext = new JavaWebContext(request(), response(), session(), Play.application().configuration().getString("saml.sso.callback", null));
         RedirectAction action = null;
         try {
             action = ((BaseClient) clients.findClient(clientName)).getRedirectAction(webContext, false, false);

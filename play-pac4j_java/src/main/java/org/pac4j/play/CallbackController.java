@@ -29,6 +29,7 @@ import org.pac4j.play.java.JavaWebContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
 import play.libs.F.Function0;
 import play.libs.F.Promise;
 import play.mvc.Controller;
@@ -59,7 +60,7 @@ public class CallbackController extends Controller {
         final Clients clientsGroup = Config.getClients();
 
         // web context
-        final JavaWebContext context = new JavaWebContext(request(), response(), session());
+        final JavaWebContext context = new JavaWebContext(request(), response(), session(), Play.application().configuration().getString("saml.sso.callback", null));
 
         // get the client from its type
         final BaseClient client = (BaseClient) clientsGroup.findClient(context);

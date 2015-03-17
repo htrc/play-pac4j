@@ -41,13 +41,16 @@ public class JavaWebContext extends BaseResponseContext {
 
     private final Session session;
 
-    // play api does not expose the scheme, just return http for now
-    private String scheme = "http";
+    private String spCallbackUrl = null;
 
-    public JavaWebContext(final Request request, final Response response, final Session session) {
+    // play api does not expose the scheme, just return http for now
+    private String scheme = "https";
+
+    public JavaWebContext(final Request request, final Response response, final Session session, final String spCallbackUrl) {
         this.request = request;
         this.response = response;
         this.session = session;
+        this.spCallbackUrl = spCallbackUrl;
     }
 
     public void setScheme(String scheme) {
@@ -124,6 +127,10 @@ public class JavaWebContext extends BaseResponseContext {
     }
 
     public String getFullRequestURL() {
-        return getScheme() + "://" + request.host() + request.uri();
+        if(spCallbackUrl == null) {
+            return getScheme() + "://" + request.host() + request.uri();
+        } else {
+            return spCallbackUrl;
+        }
     }
 }

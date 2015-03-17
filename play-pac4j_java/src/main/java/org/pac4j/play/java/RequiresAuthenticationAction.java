@@ -35,6 +35,7 @@ import org.pac4j.play.StorageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
 import play.libs.F.Function0;
 import play.libs.F.Promise;
 import play.mvc.Action;
@@ -103,7 +104,7 @@ public final class RequiresAuthenticationAction extends Action<Result> {
                 try {
                     // and compute redirection url
                     JavaWebContext webContext = new JavaWebContext(context.request(), context.response(), context
-                            .session());
+                            .session(), Play.application().configuration().getString("saml.sso.callback", null));
                     final RedirectAction action = ((BaseClient) client).getRedirectAction(webContext, true, isAjax);
                     logger.debug("redirectAction : {}", action);
                     return convertToPromise(action);
