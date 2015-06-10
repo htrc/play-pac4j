@@ -14,7 +14,7 @@
     <artifactId>play-pac4j</artifactId>
     <packaging>pom</packaging>
     <name>Play pac4j</name>
-    <version>1.2.1.htrcv3</version>
+    <version>1.2.1.htrcv4</version>
     <description>Java and Scala multi protocols (CAS, OAuth, OpenID, HTTP...) client for Play 2.2 framework</description>
     <url>https://github.com/leleuj/play-pac4j</url>
 
@@ -67,7 +67,7 @@
     </modules>
 
     <properties>
-        <pac4j.version>1.5.1.htrcv1</pac4j.version>
+        <pac4j.version>1.5.1.htrcv3</pac4j.version>
     </properties>
 
     <dependencyManagement>

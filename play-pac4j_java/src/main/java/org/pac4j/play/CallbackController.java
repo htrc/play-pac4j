@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.pac4j.core.client.BaseClient;
 import org.pac4j.core.client.Clients;
+import org.pac4j.core.client.RedirectAction;
 import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.RequiresHttpAction;
@@ -148,19 +149,50 @@ public class CallbackController extends Controller {
      * @return the redirection to the "logout url"
      */
     public static Result logoutAndRedirect() {
-        logout();
-        // parameters in url
-        final Map<String, String[]> parameters = request().queryString();
-        final String[] values = parameters.get(Constants.REDIRECT_URL_LOGOUT_PARAMETER_NAME);
-        String value = null;
-        if (values != null && values.length == 1) {
-            String value0 = values[0];
-            // check the url pattern
-            if (Config.getLogoutUrlPattern().matcher(value0).matches()) {
-                value = value0;
-            }
+        // get the session id
+        final String sessionId = session(Constants.SESSION_ID);
+        logger.debug("sessionId for logout : {}", sessionId);
+        if (StringUtils.isNotBlank(sessionId)) {
+            CommonProfile cp = StorageHelper.getProfile(sessionId);
+
+            // clients group from config
+            final Clients clientsGroup = Config.getClients();
+
+            // web context
+            final JavaWebContext context = new JavaWebContext(request(), response(), session(), Play.application().configuration().getString("saml.sso.logoutcallback", null));
+
+            // get the client from its type
+            final BaseClient client = (BaseClient) clientsGroup.findClient(context);
+
+            RedirectAction logoutRedirect = client.getLogoutRedirectAction(cp, context);
+            return ok(logoutRedirect.getContent());
         }
-        return redirect(defaultUrl(value, Config.getDefaultLogoutUrl()));
+
+        // TODO: Show proper error page
+        logger.error("Cannot find session id.");
+        return ok("Cannot find session id.");
+    }
+
+    public static Result logoutCallback(){
+        // clients group from config
+        final Clients clientsGroup = Config.getClients();
+
+        // web context
+        final JavaWebContext context = new JavaWebContext(request(), response(), session(), Play.application().configuration().getString("saml.sso.callback", null));
+
+        // get the client from its type
+        final BaseClient client = (BaseClient) clientsGroup.findClient(context);
+        logger.debug("client : {}", client);
+
+        try {
+            client.logout(context);
+        } catch (Exception e){
+            return internalServerError("Logout Failed.");
+        }
+
+        logout();
+
+        return redirect(Config.getDefaultLogoutUrl());
     }
 
     /**
