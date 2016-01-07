@@ -57,6 +57,9 @@ public class CallbackController extends Controller {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Promise<Result> callback() {
+        // clear the session
+        session().clear();
+        logger.debug("Session is cleared.");
         // clients group from config
         final Clients clientsGroup = Config.getClients();
 
@@ -103,6 +106,11 @@ public class CallbackController extends Controller {
                 // save user profile only if it's not null
                 if (profile != null) {
                     StorageHelper.saveProfile(sessionId, profile);
+                    String accessToken = (String) profile.getAttribute("access_token");
+                    String refreshToken = (String) profile.getAttribute("refresh_token");
+                    session().put("session.token",accessToken);                            // session key is from edu.indiana.d2i.htrc.portal.PortalConstants SESSION_TOKEN = "session.token"
+                    session().put("session.refresh.token", refreshToken);                  // session key is from edu.indiana.d2i.htrc.portal.PortalConstants SESSION_REFRESH_TOKEN = "session.refresh.token"
+                    session().put("session.username", profile.getId());                    // session key is from edu.indiana.d2i.htrc.portal.PortalConstants SESSION_USERNAME = "session.username"
                 }
 
                 // get requested url
