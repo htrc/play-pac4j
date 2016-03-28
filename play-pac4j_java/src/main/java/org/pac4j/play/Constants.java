@@ -38,4 +38,12 @@ public interface Constants {
     public final static String HTML_CONTENT_TYPE = "text/html; charset=utf-8";
     
     public final static String SEPARATOR = "$";
+
+    public final static String SESSION_USERNAME = "session.username";
+
+    public final static String SESSION_TOKEN = "session.token";
+
+    public final static String SESSION_EMAIL = "session.email";
+
+    public final static String SESSION_REFRESH_TOKEN = "session.refresh.token";
 }
