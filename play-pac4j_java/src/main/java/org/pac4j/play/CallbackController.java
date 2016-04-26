@@ -15,6 +15,7 @@
  */
 package org.pac4j.play;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,9 +58,6 @@ public class CallbackController extends Controller {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Promise<Result> callback() {
-        // clear the session
-        session().clear();
-        logger.debug("Session is cleared.");
         // clients group from config
         final Clients clientsGroup = Config.getClients();
 
@@ -108,9 +106,12 @@ public class CallbackController extends Controller {
                     StorageHelper.saveProfile(sessionId, profile);
                     String accessToken = (String) profile.getAttribute("access_token");
                     String refreshToken = (String) profile.getAttribute("refresh_token");
-                    session().put("session.token",accessToken);                            // session key is from edu.indiana.d2i.htrc.portal.PortalConstants SESSION_TOKEN = "session.token"
-                    session().put("session.refresh.token", refreshToken);                  // session key is from edu.indiana.d2i.htrc.portal.PortalConstants SESSION_REFRESH_TOKEN = "session.refresh.token"
-                    session().put("session.username", profile.getId());                    // session key is from edu.indiana.d2i.htrc.portal.PortalConstants SESSION_USERNAME = "session.username"
+                    String email = ((List<String>)profile.getAttribute("email")).get(0);
+                    session().put(Constants.SESSION_TOKEN,accessToken);
+                    session().put(Constants.SESSION_REFRESH_TOKEN, refreshToken);
+                    session().put(Constants.SESSION_USERNAME, profile.getId());
+                    session().put(Constants.SESSION_EMAIL, email);
+
                 }
 
                 // get requested url
